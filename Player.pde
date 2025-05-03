@@ -32,7 +32,18 @@ class Player {
 
   // Stage 2-2: Check for collisions with platforms
   void handlePlatformCollision() {
-   
+    if (ySpeed >= 0) {
+      for (Platform p : platforms) {
+        if (AABB(x, y + feetOffset, w, h - feetOffset, p.x, p.y, p.w, p.h)) {
+          float prevBottom = (y - ySpeed) + h;
+          if (prevBottom <= p.y) {
+            y  = p.y - h;
+            ySpeed = -10;
+            break;
+          }
+        }
+      }
+    }
 
   }
   // End of stage 2-2
@@ -46,7 +57,6 @@ class Player {
   void handleCeilingBottomCollision() {
     // When the player collides with the ceiling or bottom of the screen:
     // keep the player at the top and subtract health by 1
-   
 
     // Stage 3-2: 
     // This block checks if the player is not invincible and not already in a damaged state:
@@ -55,7 +65,21 @@ class Player {
     //   DAMAGE_BLINK_DURATION. This ensures the player enters a temporary "damaged" state
     //   with visual feedback (e.g., blinking effect) and avoids taking consecutive damage
     //   immediately.
-    
+
+    if (y <= 0) {
+      y = 0;
+      ySpeed = 0;
+      if (!invincible && !damaged) {
+        health = max(0, health - 1);
+        damaged = true;
+        damageTimer = DAMAGE_BLINK_DURATION;
+      }
+    }
+
+    if (y > height) {
+      health = 0;
+    }
+
     // End of stage 3-2
   }
   // End of stage 2-3
@@ -69,14 +93,29 @@ class Player {
     //   Once the timer reaches 0, the damaged state is cleared.
     // These timers ensure that the player has temporary protection after taking damage
     // and provides visual feedback (e.g., blinking effect) during these states.
+    if (invincible) {
+      invincibilityTimer--;
+      if (invincibilityTimer <= 0) invincible = false;
+    }
 
+    if (damaged) {
+      damageTimer--;
+      if (damageTimer <= 0) damaged = false;
+    }
   }
   // End of stage 3-1
 
   // Stage 3-3: Cycle through animation frames based on timer
   void updateAnimation() {
-    
-    
+    if (moveDir == 0) {
+      animatedFrameIndex = 0;
+      return;
+    }
+
+    if (frameCount % ANIMATION_INTERVAL == 0) {
+      int framesInSet = playerSprites[spriteIndex].length;
+      animatedFrameIndex = (animatedFrameIndex + 1) % framesInSet;
+    }
   }
   // End of stage 3-3
 

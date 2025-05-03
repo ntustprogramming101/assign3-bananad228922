@@ -3,7 +3,7 @@ final int NUM_PLATFORMS = 10; // Number of platforms
 final int PLAYER_HEALTH = 3; // Player's health
 final float SCROLL_SPEED = -2; // Speed of the background scrolling
 final int INVINCIBILITY_DURATION = 180; // invisible for 3 seconds at 60 FPS
-final int DAMAGE_BLINK_DURATION = 30; // blink for 0.5 seconds at 60 FPS
+final int DAMAGE_BLINK_DURATION = 90; // blink for 0.5 seconds at 60 FPS
 final int ANIMATION_INTERVAL = 10; // Frames per animation
 final int FRAME_RATE = 60; // Target frame rate
 final int WIN_MINIMUM_TIME = 60; // Time in seconds required to win
@@ -67,9 +67,11 @@ void initializeGame() {
 
 void initializePlatforms() {
   // stage 1-1: generate 10 platforms with random positions on the screen
-  for (int i = 0; i < NUM_PLATFORMS; i++) {
-    // you need to change this line to create a new platform object with random horizontal positions, while distributed evenly in vertical space
-    platforms[i] = new Platform(0,0); 
+  float spacing = height / (float) NUM_PLATFORMS;
+    for (int i = 0; i < NUM_PLATFORMS; i++) {
+      float px = random(width - 80);
+      float py = height - i * spacing;
+      platforms[i] = new Platform(px, py);
   }
   // End of stage 1-1
 }
@@ -194,10 +196,10 @@ void displayWinMessage() {
 void keyPressed() {
   if (key == 'a' || key == 'A') {
     // Move left, call player.setMovement() to set the moveDir
-
+    player.setMovement(-1);
   } else if (key == 'd' || key == 'D') {
     // Move right, call player.setMovement() to set the moveDir
-
+    player.setMovement(1);
   } else if (key == 'r' || key == 'R') {
     restartGame();
   }
@@ -206,7 +208,7 @@ void keyPressed() {
 void keyReleased() {
   if (key == 'a' || key == 'A' || key == 'd' || key == 'D') {
     // Stop moving, call player.setMovement() to set the moveDir
-
+    player.setMovement(0);
   }
 } 
 // End of stage 2-1
